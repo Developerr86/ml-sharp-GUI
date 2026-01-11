@@ -31,6 +31,94 @@ To test the installation, run
 sharp --help
 ```
 
+## Using the GUI (Desktop Application)
+
+SHARP now includes a desktop GUI application built with PyQt6 for interactive 3D Gaussian Splatting visualization.
+
+### Prerequisites (Windows)
+
+The GUI requires additional setup on Windows for CUDA-accelerated rendering:
+
+1. **CUDA Toolkit** (Required for GPU rendering)
+   - Download and install [CUDA Toolkit 12.4](https://developer.nvidia.com/cuda-12-4-0-download-archive)
+   - Match the version to your PyTorch installation (check with `pip show torch`)
+   - Verify installation: `nvcc --version`
+
+2. **Visual Studio Build Tools** (Required for compiling CUDA extensions)
+   - Download [Visual Studio Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
+   - During installation, select **"Desktop development with C++"**
+   - Ensure these components are checked:
+     - MSVC v143 (or latest)
+     - Windows 10/11 SDK
+     - C++ CMake tools for Windows
+
+3. **PyTorch with CUDA**
+   ```bash
+   # Uninstall CPU version if present
+   pip uninstall torch torchvision -y
+   
+   # Install CUDA version (matching your CUDA Toolkit)
+   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+   ```
+
+4. **PyQt6**
+   ```bash
+   pip install PyQt6
+   ```
+
+5. **Reinstall gsplat** (after CUDA Toolkit and Build Tools are installed)
+   ```bash
+   pip uninstall gsplat -y
+   pip install gsplat
+   ```
+
+### Running the GUI
+
+**Option 1: Using Developer Command Prompt (Recommended for Windows)**
+1. Open **"x64 Native Tools Command Prompt for VS"** from Start Menu
+2. Navigate to the project directory
+3. Activate your conda environment: `conda activate sharp`
+4. Run: `python src/sharp_gui.py`
+
+**Option 2: Regular Command Prompt**
+```bash
+python src/sharp_gui.py
+```
+
+### GUI Features
+
+- **Load Image**: Open JPG/PNG/HEIC images for processing
+- **Generate 3D Model**: Run SHARP inference to create 3D Gaussians (downloads model checkpoint automatically on first run)
+- **Interactive Viewer**: 
+  - Left-click + drag to rotate camera
+  - Scroll wheel to zoom in/out
+  - Real-time rendering using gsplat
+- **Controls**:
+  - Camera Radius slider: Adjust viewing distance
+  - Splat Scale slider: Control Gaussian splat sizes
+- **File Operations**:
+  - Save PLY: Export generated 3D Gaussians
+  - Load PLY: Import previously saved models
+
+### Troubleshooting
+
+**"CUDA not available" error:**
+- Verify PyTorch CUDA: `python -c "import torch; print(torch.cuda.is_available())"`
+- Should return `True`. If `False`, reinstall PyTorch with CUDA support.
+
+**"gsplat: No CUDA toolkit found" error:**
+- Install CUDA Toolkit matching your PyTorch version
+- Reinstall gsplat after CUDA Toolkit installation
+
+**"cannot find 'cl'" error:**
+- Install Visual Studio Build Tools with C++ development tools
+- Use Developer Command Prompt for VS, or
+- Run `vcvars64.bat` before launching Python
+
+**First run is slow:**
+- gsplat compiles CUDA kernels on first use (takes a few minutes)
+- Subsequent runs will be much faster
+
 ## Using the CLI
 
 To run prediction:
